@@ -13,10 +13,10 @@ const LEGALIZACAO_CONFIG = {
     CONCLUIDO: "CONCLUÍDO"
   },
 
-  // Always use ECAB category for legalizacao
+  // Blue label for legalizacao tasks
   CATEGORY: {
-    name: "ECAB",
-    id: "6850223d7517ca292078a10d",
+    name: "",
+    id: "64136718d88ffb994ecf2015",
     color: "blue"
   },
 
