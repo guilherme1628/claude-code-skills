@@ -1,13 +1,16 @@
 {
-  "name": "gb-skills-marketplace",
+  "name": "gb-skills",
   "owner": {
     "name": "gb"
   },
   "plugins": [
     {
       "name": "my-skills",
-      "source": ".",
-      "description": "Collection of workflow skills for task management and automation"
+      "description": "Collection of workflow skills for task management and automation",
+      "source": "./",
+      "skills": [
+        "./skills/legalizacao"
+      ]
     }
   ]
 }
