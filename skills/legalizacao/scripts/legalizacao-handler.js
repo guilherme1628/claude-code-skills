@@ -122,10 +122,11 @@ class LegalizacaoHandler extends TrelloAPI {
         throw new Error('RECEBIDAS list not found in LEGALIZACAO board');
       }
 
-      // Build title
-      const title = `[${data.type}] - ${data.basic.companyName}`;
+      // Build title (shorter, just first name option)
+      const companyName = data.basic.companyName.split('(')[0].trim();
+      const title = `[${data.type}] - ${companyName}`;
 
-      // Build description
+      // Build description matching existing card format
       let description = `**Categoria:** ECAB
 **Prioridade:** ${data.basic.priority}
 **Tipo:** Normal
@@ -133,19 +134,55 @@ class LegalizacaoHandler extends TrelloAPI {
 
 **DADOS DA LEGALIZAÇÃO:**
 **Contexto:** ${data.type}
-**Empresa:** ${data.basic.companyName}`;
+**Empresa:** ${companyName}`;
 
-      if (data.company) {
-        description += `\n\n**DADOS DA EMPRESA:**
-**Atividades:** ${data.company.activities || '-'}
-**IPTU Sede:** ${data.company.iptu || '-'}
-**Capital Social:** ${data.company.socialCapital || '-'}`;
+      // Company names section
+      if (data.basic.companyName.includes('(') || data.basic.companyName.includes(',')) {
+        description += `\n\n**OPÇÕES DE NOMES:**`;
+        const names = data.basic.companyName.replace(/[()]/g, '').split(/,|opções:/i).map(n => n.trim()).filter(n => n);
+        names.forEach((name, i) => {
+          description += `\n${i + 1}. ${name}`;
+        });
       }
 
+      // Company data section
+      if (data.company) {
+        description += `\n\n**CAPITAL SOCIAL:** ${data.company.socialCapital || '-'}`;
+        description += `\n**PORTE:** ${data.company.porte || '-'}`;
+
+        if (data.company.endereco) {
+          description += `\n\n**ENDEREÇO DA EMPRESA:**\n${data.company.endereco}`;
+        }
+
+        description += `\n\n**IPTU:** ${data.company.iptu || '-'}`;
+
+        if (data.company.activities) {
+          description += `\n\n**ATIVIDADES EXERCIDAS:**`;
+          const activities = data.company.activities.split('\n');
+          activities.forEach(act => {
+            if (act.trim()) description += `\n• ${act.trim()}`;
+          });
+        }
+      }
+
+      // Partners section with full details
       if (data.partners && data.partners.length > 0) {
-        description += `\n\n**SÓCIOS (${data.partners.length}):**`;
+        const tipoSociedade = data.partners.length === 1 ? 'Unipessoal' : `${data.partners.length} sócios`;
+        description += `\n\n**DADOS DO SÓCIO (${tipoSociedade}):**`;
+
         data.partners.forEach((partner, i) => {
-          description += `\n${i + 1}. ${partner.name} - ${partner.participation}% - ${partner.profession}`;
+          if (data.partners.length > 1) {
+            description += `\n\n**Sócio ${i + 1}:**`;
+          }
+          description += `\n• ${partner.name}`;
+          description += `\n• ${partner.birthCity || '-'}/${partner.birthState || '-'}`;
+          description += `\n• ${partner.maritalStatus || '-'}`;
+          if (partner.marriageRegime && partner.marriageRegime !== '-') {
+            description += ` - ${partner.marriageRegime}`;
+          }
+          description += `\n• Profissão: ${partner.profession || '-'}`;
+          description += `\n• Participação: ${partner.participation}%`;
+          description += `\n• Documentos: ${partner.documents?.rg === 'Anexo' ? 'Anexados no Trello' : 'Serão anexados no Trello'}`;
         });
       }
 
