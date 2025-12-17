@@ -1,0 +1,10 @@
+{
+  "name": "my-skills",
+  "version": "1.0.0",
+  "description": "Collection of workflow skills for task management and automation",
+  "author": {
+    "name": "gb"
+  },
+  "license": "MIT",
+  "keywords": ["workflow", "trello", "legalizacao", "automation"]
+}

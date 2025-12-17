@@ -1,0 +1,13 @@
+{
+  "name": "gb-skills-marketplace",
+  "owner": {
+    "name": "gb"
+  },
+  "plugins": [
+    {
+      "name": "my-skills",
+      "source": ".",
+      "description": "Collection of workflow skills for task management and automation"
+    }
+  ]
+}
